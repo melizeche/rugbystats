@@ -1,12 +1,26 @@
 from django.db import models
 from django.utils.translation import ugettext as _
+from django.db.models.signals import pre_save
+from django.dispatch import receiver
+from autoslug import AutoSlugField
 from .app_settings import *
 
 
 class Team(models.Model):
     name = models.CharField(max_length=50)
-    shortname = models.CharField(_('Short Name'), max_length=50)
+    shortname = models.CharField(
+        _('Short Name'), max_length=50, blank=True, null=True)
     logo = models.ImageField(upload_to='images', blank=True, null=True)
+    icon = models.ImageField(upload_to='icons', blank=True, null=True)
+    slug = AutoSlugField(populate_from='shortname', blank=True, null=True)
+
+    def __str__(self):
+        return self.name
+
+
+class Division(models.Model):
+    name = models.CharField(max_length=50)
+    slug = AutoSlugField(populate_from='name')
 
     def __str__(self):
         return self.name
@@ -14,6 +28,8 @@ class Team(models.Model):
 
 class Championship(models.Model):
     name = models.CharField(max_length=50)
+    division = models.ForeignKey(
+        'Division', verbose_name=_('Division'), null=True, blank=True)
 
     def __str__(self):
         return self.name
@@ -79,3 +95,9 @@ class Match(models.Model):
         t1 += TRY_BONUS_POINTS if self.trybonust1 == True else 0
         t2 += TRY_BONUS_POINTS if self.trybonust2 == True else 0
         return t1, t2
+
+
+@receiver(pre_save, sender=Team)
+def set_short_if_empty(sender, instance, *args, **kwargs):
+    if not instance.shortname:
+        instance.shortname = instance.name

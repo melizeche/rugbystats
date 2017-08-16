@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Team, Championship, Round, Match
+from .models import Team, Championship, Round, Match, Division
 
 # class MatchAdmin(admin.ModelAdmin):
 #     list_display =
@@ -25,3 +25,4 @@ admin.site.register(Team)
 admin.site.register(Championship, ChampionshipAdmin)
 admin.site.register(Round, RoundAdmin)
 admin.site.register(Match)
+admin.site.register(Division)
