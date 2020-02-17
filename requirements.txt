@@ -1,4 +1,4 @@
-django==1.11.23
+django==1.11.28
 django-autoslug==1.9.3
 pillow==6.2.0
 
